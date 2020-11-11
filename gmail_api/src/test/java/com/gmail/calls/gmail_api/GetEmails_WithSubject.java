@@ -23,7 +23,7 @@ public class GetEmails_WithSubject {
 			props.put("mail.store.protocol", "imaps");
 			Session session = Session.getDefaultInstance(props, null);
 			Store store = session.getStore("imaps");
-			store.connect("imap.gmail.com", "emaildemg@gmail.com", "abc");
+			store.connect("imap.gmail.com", "abc@gmail.com", "MyPasrd1");
 
 			// if you want mail from specified folder, just change change folder name
 			// Folder inbox = store.getFolder("[Gmail]/Drafts");
