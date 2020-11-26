@@ -151,9 +151,8 @@ public class ReadLinkFromEmail {
 
 				if (messages[i].getSubject().contains(subject)) {
 
-					message = getTextFromMessage(messages[i]);
 					if (getTextFromMessage(messages[i]).contains(BodyText)) {
-						
+						message = getTextFromMessage(messages[i]);
 						break;
 					}
 
@@ -174,9 +173,9 @@ public class ReadLinkFromEmail {
 			result = message.getContent().toString();
 		} else if (message.isMimeType("multipart/*")) {
 			MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
-			System.out.println("multipart is "+mimeMultipart);
+			System.out.println("multipart is " + mimeMultipart);
 			result = getTextFromMimeMultipart(mimeMultipart);
-			//System.out.println("text message is   " + result);
+			// System.out.println("text message is " + result);
 		}
 		return result;
 	}
@@ -186,23 +185,49 @@ public class ReadLinkFromEmail {
 		int count = mimeMultipart.getCount();
 		for (int i = 0; i < count; i++) {
 			BodyPart bodyPart = mimeMultipart.getBodyPart(i);
-			if (bodyPart.isMimeType("text/plain")) {
-				result = result + "\n" + bodyPart.getContent();
-				break; // without break same text appears twice in my tests
-			} else if (bodyPart.isMimeType("text/html")) {
-				String html = (String) bodyPart.getContent();
-				result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
-			} else if (bodyPart.getContent() instanceof MimeMultipart) {
-				result = result + getTextFromMimeMultipart((MimeMultipart) bodyPart.getContent());
-				// System.out.println("HMTL message is "+result);
-			}
+
+			/*
+			 * if (bodyPart.isMimeType("text/plain")) { result = result + "\n" +
+			 * bodyPart.getContent(); break; } else if (bodyPart.isMimeType("text/html")) {
+			 * String html = (String) bodyPart.getContent(); result = result + "\n" +
+			 * org.jsoup.Jsoup.parse(html).text(); } else if (bodyPart.getContent()
+			 * instanceof MimeMultipart) { result = result +
+			 * getTextFromMimeMultipart((MimeMultipart) bodyPart.getContent()); //
+			 * System.out.println("HMTL message is " + result); }
+			 */
+
+			result = result + "\n" + bodyPart.getContent();
 		}
 		return result;
 	}
 	
+public  String readURL(String emailBody,String pattern,int group) {
+
+		
+		// Create a Pattern object
+		Pattern r = Pattern.compile(pattern);
+
+		// Now create matcher object.
+		String url = null;
+		System.out.println("Body is  " + emailBody);
+		Matcher m = r.matcher(emailBody);
+		while(m.find()) {
+			//System.out.println("Found value: " + m.group(0).toString());
+		//	System.out.println("Found value: " + m.group(1).toString());
+			 System.out.println("Found value: " + m.group(2).toString() );
+			// System.out.println("Found value: " + m.groupCount() );
+			url = m.group(group).toString();
+			
+		} 
+		return url;
+	}
+
 	@Test
 	public void abc() {
-		String s=readBodyWithSpecificText("Fwd: Proposal Clarification: ttstdyj","emaildemo83","OKTesting","Reply buyer by email");
-		System.out.println("text is   "+s);
+		String pattern="<a id=\"reply\"\\s+(?:[^>]*?\\s+)?href=([\"'])(.*?)\\1";
+		String s = readBodyWithSpecificText("Proposal Clarification: Tty", "emaildemo1983@gmail.com", "MyPassword1",
+				"Reply buyer by email");
+		readURL(s,pattern,1);
+		//System.out.println("text is   " + s);
 	}
 }
